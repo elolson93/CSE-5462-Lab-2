@@ -1,36 +1,37 @@
 /*
-/ Eric Olson and James Baker
-/Lab 2 - CSE 5462
-/September 9, 2016
-
+ * Eric Olson and James Baker
+ * Lab 2 - CSE 5462
+ * September 9, 2016
+ * This server file accepts a single client connection and writes the data stream sent by the client to an 
+ * output file.
 */
 
-/* server.c using TCP */
-
-/* Server for accepting an Internet stream connection on port 1040 */
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 
-#define port "1040"   /* socket file name */
+int main(int argc, char* argv[]) {
+	if (argc != 2) {
+		fprintf(stderr, "%s\n", "There are not enough arguments. Please be sure to include the local port number.");
+		return 1;
+	}
 
-/* server program called with no argument */
-main(void)
-{
   int sock;                     /* initial socket descriptor */
-  int msgsock;                  /* accepted socket descriptor,
-                                 * each client connection has a
-                                 * unique socket descriptor*/
-  int rval=1;                   /* returned value from a read */  
+  int msgsock;                  /* accepted socket descriptor, each client connection has a unique socket descriptor */
   struct sockaddr_in sin_addr; /* structure for socket name setup */
-  char buf[1024];               /* buffer for holding read data */
-  char buf2[1024] = "Hello back in TCP from server"; 
+
+
+  char fileName[20] = {'\0'};
+  int fileSize = 0;
+  char readBuffer[512] = {0};
 
   printf("TCP server waiting for remote connection from clients ...\n");
  
@@ -43,7 +44,7 @@ main(void)
   /* construct name of socket to send to */
   sin_addr.sin_family = AF_INET;
   sin_addr.sin_addr.s_addr = INADDR_ANY;
-  sin_addr.sin_port = htons(atoi(port));
+  sin_addr.sin_port = htons(atoi(argv[1]));
 
   /* bind socket name to socket */
   if(bind(sock, (struct sockaddr *)&sin_addr, sizeof(struct sockaddr_in)) < 0) {
@@ -51,34 +52,54 @@ main(void)
     exit(1);
   }
   
-  /* listen for socket connection and set max opened socket connetions to 5 */
-  listen(sock, 5);
+	/* listen for socket connection and set max opened socket connetions to 5 */
+	listen(sock, 5);
   
-  /* accept a (1) connection in socket msgsocket */ 
-  if((msgsock = accept(sock, (struct sockaddr *)NULL, (int *)NULL)) == -1) { 
-    perror("error connecting stream socket");
-    exit(1);
-  } 
-  
-  /* put all zeros in buffer (clear) */
-  bzero(buf,1024);
+  	/* accept a connection in socket msgsocket */ 
+  	if((msgsock = accept(sock, (struct sockaddr *)NULL, (socklen_t *)NULL)) == -1) { 
+    	perror("error connecting stream socket");
+    	exit(1);
+  	} 
 
-  /* read from msgsock and place in buf */
-  if(read(msgsock, buf, 1024) < 0) {
-    perror("error reading on stream socket");
-    exit(1);
-  } 
-  printf("Server receives: %s\n", buf);
- 
-  /* write message back to client */
-  if(write(msgsock, buf2, 1024) < 0) {
-    perror("error writing on stream socket");
-    exit(1);
-  }
-  printf("Server sends:    %s\n", buf2);
- 
-  /* close all connections and remove socket file */
-  close(msgsock);
-  close(sock);
+  	/* get the size of the payload */
+  	if (recv(msgsock, &fileSize, 4, 0) < 4) {
+  		//read more somehow
+  		printf("%s\n", "The size read returned less than 4");
+  		exit(1);
+  	}
+
+  	/* get the name of the file */
+  	if (recv(msgsock, fileName, sizeof(fileName), 0) < 20) {
+  		//read more somehow
+  		printf("%s\n", "The name read returned less than 20");
+  		exit(1);
+  	}
+
+  	/* create a directory if one does not already exist */
+  	mkdir("recvd", 0777);
+  	FILE* output = fopen(strcat("recvd\\", fileName), "wb");
+  	if (NULL == output) {
+		fprintf(stderr, "%s\n", "There was an error opening the output file. Please try again.");
+		exit(1);
+	}
+
+  	/* read the payload from the stream until the whole payload has been read */
+  	int amtRead = 0;
+  	while (amtRead != fileSize) { 
+  		amtRead += recv(msgsock, readBuffer, sizeof(readBuffer), 0);
+  		if (amtRead < 0) {
+  			fprintf(stderr, "%s\n", "There was an error reading from the connection stream. Server terminating :(");
+  			exit(1);
+  		} 
+
+  		/* write the received data to the output file */
+  		fwrite(readBuffer, 1, amtRead, output);
+  	}
+  
+  	/* close the output file and connections */
+  	close(msgsock);
+  	close(sock);
+  	fclose(output);
+
+  	return 0;
 }
-

@@ -15,7 +15,7 @@ main(int argc, char *argv[])
 	/* Validate input args */
 	if(argc != 4) 
 	{
-		printf("Error: Include host in arguments, port, and local file to transfer in arguments.\n");
+		fprintf(stderr, "Error: Include host in arguments, port, and local file to transfer in arguments.\n");
 		exit(1);
 	}
 
@@ -61,7 +61,7 @@ main(int argc, char *argv[])
   	FILE *fp = fopen(file_name,"r");
   	if(fp==NULL) 
 	{
-    		perror("File opern error");
+    		perror("File open error");
     		exit(1);  
   	}
 
