@@ -22,6 +22,7 @@ main(int argc, char *argv[])
 	int sock;                     /* initial socket descriptor */
 	int rval;                     /* returned value from a read */
 	int num_bytes;		      /* number of bytes of file to be sent */
+	char num_bytes_str[4];	      /* number of bytes to string */
 	int num_read;		      /* bytes read from file stream */
 	struct sockaddr_in sin_addr;  /* structure for socket name setup */
 	char * file_name = argv[3];   /* file name */
@@ -70,6 +71,9 @@ main(int argc, char *argv[])
 	num_bytes = ftell(fp);
 	rewind(fp);
         
+	/* convert number of bytes to string to send */
+	/*sprintf(num_bytes_str, "%d", num_bytes);*/
+	
 	/* Send file size in 4 bytes */
 	send(sock, &num_bytes, 4, 0);
 
