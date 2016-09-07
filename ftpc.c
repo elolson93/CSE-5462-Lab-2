@@ -102,6 +102,10 @@ main(int argc, char *argv[])
 		  	}
 		}
 	}
-	
+
+	printf("Reached end of client code\n");
+	close(fp);
+	close(sock);
 	return(0); 
 }
+

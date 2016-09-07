@@ -99,8 +99,7 @@ int main(int argc, char* argv[]) {
 	printf("Opened file\n");
 
 
-	//EVERYTHING ABOVE IS FUNCTIONAL. THE PROGRAM ONLY WORKS FOR TEXTS FILES IN ITS CURRENT STATE.
-	//CODE BELOW NEEDS FIXED TO HANDLE OTHER FILE TYPES
+	//EVERYTHING ABOVE IS FUNCTIONAL. THE PROGRAM ONLY WORKS FOR TEXTS FILE AS OF NOW
 
   	/* read the payload from the stream until the whole payload has been read */
   	int amtRead = 0;
