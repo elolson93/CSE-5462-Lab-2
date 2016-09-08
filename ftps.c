@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
  
   /*initialize socket connection in unix domain*/
   if((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-  perror("error openting datagram socket");
+  perror("Error opening socket");
   exit(1);
   }
   
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
 
   /* bind socket name to socket */
   if(bind(sock, (struct sockaddr *)&sin_addr, sizeof(struct sockaddr_in)) < 0) {
-    perror("error binding stream socket");
+    perror("Error binding stream socket");
     exit(1);
   }
   
@@ -58,14 +58,14 @@ int main(int argc, char* argv[]) {
   
   	/* accept a connection in socket msgsocket */ 
   	if((msgsock = accept(sock, (struct sockaddr *)NULL, (socklen_t *)NULL)) == -1) { 
-    	perror("error connecting stream socket");
+    	perror("Error connecting stream socket");
     	exit(1);
   	} 
 
   	/* get the size of the payload */
   	if (recv(msgsock, &fileSize, 4, 0) < 4) {
   		//read more somehow
-  		printf("%s\n", "The size read returned less than 4");
+  		printf("%s\n", "Error: The size read returned less than 4");
   		exit(1);
   	}
 	printf("Recieved size is %d\n", fileSize);
@@ -73,11 +73,10 @@ int main(int argc, char* argv[]) {
   	/* get the name of the file */
   	if (recv(msgsock, fileName, sizeof(fileName), 0) < 20) {
   		//read more somehow
-  		printf("%s\n", "The name read returned less than 20");
+  		printf("%s\n", "Error: The name read returned less than 20");
   		exit(1);
   	}
 	printf("Recieved name is: %s\n", fileName);
-	printf("Name length is : %zu\n", strlen(fileName));
 
   	/* create a directory if one does not already exist */  
 	
@@ -85,22 +84,12 @@ int main(int argc, char* argv[]) {
     		mkdir("recvd", 0700);
 	}
 
-  	//mkdir("recvd", 0777);
-	printf("Created directory\n");
-	
-	
-
   	FILE* output = fopen(strcat(pathName, fileName), "wb");
 	
   	if (NULL == output) {
-		fprintf(stderr, "%s\n", "There was an error opening the output file. Please try again.");
+		fprintf(stderr, "%s\n", "Error opening the output file");
 		exit(1);
 	}
-	printf("Opened file\n");
-
-
-	//EVERYTHING ABOVE IS FUNCTIONAL. THE PROGRAM ONLY WORKS FOR TEXTS FILES IN ITS CURRENT STATE.
-	//CODE BELOW NEEDS FIXED TO HANDLE OTHER FILE TYPES
 
   	/* read the payload from the stream until the whole payload has been read */
   	int amtReadTotal = 0;
@@ -109,7 +98,7 @@ int main(int argc, char* argv[]) {
   		amtRead = recv(msgsock, readBuffer, sizeof(readBuffer), 0);
   		amtReadTotal += amtRead;
   		if (amtRead < 0) {
-  			fprintf(stderr, "%s\n", "There was an error reading from the connection stream. Server terminating :(");
+  			fprintf(stderr, "%s\n", "Error reading from the connection stream. Server terminating");
   			exit(1);
   		} 
 
@@ -117,7 +106,7 @@ int main(int argc, char* argv[]) {
   		fwrite(readBuffer, 1, amtRead, output);
   	}
 
-	printf("Recieved file\n");
+	printf("Recieved file.\n");
   
   	/* close the output file and connections */
   	close(msgsock);
