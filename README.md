@@ -1,8 +1,8 @@
-#This is the README for CSE 5462 Lab 2: TCP socket file transfer application
+#CSE 5462 Lab 2: TCP socket file transfer application
 
-##Contributors: James Baker, Eric Olson
+Contributors: James Baker, Eric Olson
 
-###TABLE OF CONTENTS
+##TABLE OF CONTENTS
 
 1. About
 
@@ -14,14 +14,14 @@
 
 -----------------------------------------------------------------------------
 
-###1. ABOUT
+##1. ABOUT
 
 This application will send a file using TCP sockets from a client called ftpc
 to a server called ftps. 
 
 -----------------------------------------------------------------------------
 
-###2. INSTALLATION
+##2. INSTALLATION
 
 Ensure that 'ftpc.c', 'ftps.c', and 'Makefile' are located in your desired 
 installation directory. 
@@ -33,7 +33,7 @@ client (ftpc) and executable server (ftps) in the installation directory.
 
 -----------------------------------------------------------------------------
 
-###3. USAGE
+##3. USAGE
 
 Make note of the location of the file you wish to transfer. In the terminal,
 navigate to the location of that the program was installed above. 
@@ -68,7 +68,7 @@ completed.
 
 -----------------------------------------------------------------------------
 
-###4. HELP
+##4. HELP
 
 Below are common errors encountered in the server program.
 
