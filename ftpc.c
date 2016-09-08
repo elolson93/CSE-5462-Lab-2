@@ -1,4 +1,4 @@
-/* client.c using TCP */
+/* ftpc.c using TCP */
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -12,7 +12,7 @@
 /* client program called with host name where server is run */
 main(int argc, char *argv[])
 {
-	/* Validate input args */
+	/* validate input args */
 	if(argc != 4) 
 	{
 		fprintf(stderr, "Error: Include host in arguments, port, and local file to transfer in arguments.\n");
@@ -27,12 +27,12 @@ main(int argc, char *argv[])
 	char * file_name = argv[3];   /* file name */
 	char buf[512] = {0};          /* bytes to send to server */
 	struct hostent *hp;	      /* host */
-	int port = atoi(argv[2]);     /*port number from args */
+	int port = atoi(argv[2]);     /* port number from args */
   
 	/* initialize socket connection in unix domain */
 	if((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
-		perror("error openting datagram socket");
+		perror("Error opening socket");
 		exit(1);
 	}
 
@@ -53,7 +53,7 @@ main(int argc, char *argv[])
   	if(connect(sock, (struct sockaddr *)&sin_addr, sizeof(struct sockaddr_in)) < 0) 
 	{
     		close(sock);
-    		perror("error connecting stream socket");
+    		perror("Error connecting stream socket");
     		exit(1);
   	}
   
@@ -61,7 +61,7 @@ main(int argc, char *argv[])
   	FILE *fp = fopen(file_name,"r");
   	if(fp==NULL) 
 	{
-    		perror("File open error");
+    		perror("Error opening file");
     		exit(1);  
   	}
 
@@ -81,10 +81,9 @@ main(int argc, char *argv[])
 	  	/* Read file in chunks of 512 bytes */
 		num_read = fread(buf,1,512,fp);
 
-		/* If read was success, send data. */
+		/* If read was successful send data. */
 		if(num_read > 0)
 		{
-			printf("Sending \n");
 		   	send(sock, buf, num_read, 0);
 		}
 
@@ -97,13 +96,13 @@ main(int argc, char *argv[])
 		  	}
 		  	else if (ferror(fp))
 		  	{
-				perror("Error reading\n");
+				perror("Error reading file\n");
 				exit(1);
 		  	}
 		}
 	}
 
-	printf("Reached end of client code\n");
+	/* Close file and connection */
 	close(fp);
 	close(sock);
 	return(0); 
