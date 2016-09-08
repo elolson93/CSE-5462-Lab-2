@@ -1,6 +1,6 @@
 #CSE 5462 Lab 2: TCP socket file transfer application
 
-Contributors: James Baker, Eric Olson
+Authors: James Baker, Eric Olson
 
 ##TABLE OF CONTENTS
 
