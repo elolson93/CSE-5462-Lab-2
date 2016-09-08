@@ -81,8 +81,8 @@ int main(int argc, char* argv[]) {
 
   	/* create a directory if one does not already exist */  
 	
-	if (stat("/recvd", &st) == -1) {
-    		mkdir("/recvd", 0700);
+	if (stat("recvd", &st) == -1) {
+    		mkdir("recvd", 0700);
 	}
 
   	//mkdir("recvd", 0777);
@@ -103,9 +103,11 @@ int main(int argc, char* argv[]) {
 	//CODE BELOW NEEDS FIXED TO HANDLE OTHER FILE TYPES
 
   	/* read the payload from the stream until the whole payload has been read */
+  	int amtReadTotal = 0;
   	int amtRead = 0;
-  	while (amtRead != fileSize) { 
-  		amtRead += recv(msgsock, readBuffer, sizeof(readBuffer), 0);
+  	while (amtReadTotal < fileSize) { 
+  		amtRead = recv(msgsock, readBuffer, sizeof(readBuffer), 0);
+  		amtReadTotal += amtRead;
   		if (amtRead < 0) {
   			fprintf(stderr, "%s\n", "There was an error reading from the connection stream. Server terminating :(");
   			exit(1);
